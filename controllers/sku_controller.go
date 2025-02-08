@@ -26,19 +26,39 @@ func CreateSKU(c *gin.Context) {
 func GetSKUByID(c *gin.Context) {
 	id := c.Param("id")
 	if id == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "ID parameter is required"})
+		c.JSON(http.StatusBadRequest, gin.H{
+			"is_success": false,
+			"status_code": http.StatusBadRequest,
+			"data": gin.H{
+				"message": "ID parameter is required",
+			},
+			"meta": gin.H{},
+		})
 		return
 	}
 
 	var sku models.SKU
 
 	if err := config.DB.First(&sku, "id = ?", id).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		c.JSON(http.StatusNotFound, gin.H{
+			"is_success": false,
+			"status_code": http.StatusNotFound,
+			"data": gin.H{
+				"message": err.Error(),
+			},
+			"meta": gin.H{},
+		})
 		return
 	}
 
-	c.JSON(http.StatusOK, sku)
+	c.JSON(http.StatusOK, gin.H{
+		"is_success": true,
+		"status_code": http.StatusOK,
+		"data": sku,
+		"meta": gin.H{},
+	})
 }
+
 
 func GetAllSKUs(c *gin.Context) {
 	var skus []models.SKU
